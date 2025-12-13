@@ -1,0 +1,7 @@
+mode: set
+github.com/tjasha/packageTestProgram3/main.go:8.13,11.16 2 0
+github.com/tjasha/packageTestProgram3/main.go:11.16,14.3 2 0
+github.com/tjasha/packageTestProgram3/main.go:16.2,16.46 1 0
+github.com/tjasha/packageTestProgram3/main.go:20.44,23.12 2 1
+github.com/tjasha/packageTestProgram3/main.go:23.12,25.3 1 1
+github.com/tjasha/packageTestProgram3/main.go:27.3,28.20 2 1
