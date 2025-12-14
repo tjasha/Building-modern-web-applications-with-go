@@ -19,8 +19,6 @@ func About(w http.ResponseWriter, r *http.Request) {
 } 
 
 
-
-
 func main() {
 
 	http.HandleFunc("/", Home)
