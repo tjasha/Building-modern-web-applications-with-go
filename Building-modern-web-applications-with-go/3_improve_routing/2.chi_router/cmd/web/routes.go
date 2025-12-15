@@ -20,6 +20,9 @@ func routes(app *config.AppConfig) http.Handler {
 	//we can easily add some middleware that is available in chi
 	//we are adding middleware that is recovering application if there was fatal error
 	mux.Use(middleware.Recoverer) 
+	// we are calling out middleware here
+	mux.Use(WriteToConsole)
+	mux.Use(NoSerf)
 
 	mux.Get("/", handlers.Repo.Home)
 	mux.Get("/about", handlers.Repo.About)
