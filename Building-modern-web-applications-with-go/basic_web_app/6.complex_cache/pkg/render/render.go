@@ -1,0 +1,77 @@
+package render
+
+import (
+	"bytes"
+	"log"
+	"net/http"
+	"path/filepath"
+	"text/template"
+)
+
+func RenderTemplate(w http.ResponseWriter, templ string) {
+	//create template cache
+	tc, err := createTemplateCache() //tc = template cache
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// get requested template from cache 
+	template, ok := tc[templ]
+	if !ok {
+		log.Fatal(err)
+	}
+	buf := new(bytes.Buffer) //used for better error checking
+	err = template.Execute(buf, nil) 
+	if err != nil {
+		log.Println(err)
+	}
+
+	//render the template
+	_, err = buf.WriteTo(w)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+
+func createTemplateCache() (map[string]*template.Template, error) {
+	myCache := map[string]*template.Template{} //it's creating empty map
+
+	// i want to add automatically all available templates that exist
+	// they should be added in order
+
+	// i want to first add all *page.tmpl from ./templates
+	pages, err := filepath.Glob("./templates/*.page.tmpl") //we just look for all files with this pattern
+	if err != nil {
+		return myCache, err
+	}
+
+	//range through all files ending with *page.tmpl that we found before
+	for _, page := range pages { //page is full path to the template
+		name := filepath.Base(page) //returns last element of the path = name of the file 
+		ts, err := template.New(name).ParseFiles(page) //(ts = template set) we  parse this file (page) and store in the template (name)
+		if err != nil {
+			return myCache, err
+		}
+
+
+		//now we look for all layouts - we use the same syntax as for the pages
+		matches, err := filepath.Glob("./templates/*.layout.tmpl")
+		if err != nil {
+			return myCache, err
+		}
+
+		//checking how many elements we have
+		if len(matches) > 0 {
+			ts, err = ts.ParseGlob("./templates/*.layout.tmpl") // check if any of the pages needs layout inside of them to be rendered. if yes, it adds it to the ts
+			if err != nil {
+				return myCache, err
+			}
+		}
+
+		myCache[name] = ts //adding template set to cache map
+	}
+
+	return myCache, nil
+}
+
